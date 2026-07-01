@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vote | MyFuelMyChoice</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="site-nav">
+        <div class="logo">⛽ MyFuelMyChoice</div>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="facts.html">Learn</a></li>
+            <li><a href="vote.html" aria-current="page">Vote</a></li>
+            <li><a href="results.html">Results</a></li>
+        </ul>
+    </nav>
+
+    <main class="vote-page">
+        <section class="page-hero">
+            <div class="page-header">
+                <span class="eyebrow">Vote</span>
+                <h1>Share your opinion in one click.</h1>
+                <p class="hero-text">Choose the option that best reflects your view on fuel policy. No login required for the first vote.</p>
+                <p class="hero-text">The voting button becomes active as soon as you select Support, Oppose, or Neutral.</p>
+            </div>
+            <aside class="callout glass-card">
+                <strong>Minimal data, anonymous by default.</strong>
+                <p>We collect only your vote choice, an optional reason, and a timestamp. No unnecessary personal information is requested.</p>
+            </aside>
+        </section>
+
+        <section class="vote-panel glass-card">
+            <div class="vote-status hidden">
+                <strong>Vote recorded</strong>
+                <p class="status-copy"></p>
+            </div>
+
+            <div class="vote-grid">
+                <button class="choice-card" data-choice="support" type="button">
+                    <span>👍</span>
+                    <h3>Support</h3>
+                    <p>I support ethanol blending as fuel policy.</p>
+                </button>
+                <button class="choice-card" data-choice="oppose" type="button">
+                    <span>👎</span>
+                    <h3>Oppose</h3>
+                    <p>I do not support ethanol blending as fuel policy.</p>
+                </button>
+                <button class="choice-card" data-choice="neutral" type="button">
+                    <span>🤝</span>
+                    <h3>Neutral</h3>
+                    <p>I prefer a balanced view without support or opposition.</p>
+                </button>
+            </div>
+
+            <div class="feedback-block">
+                <label for="reason">Optional: Why did you choose this option?</label>
+                <textarea id="reason" placeholder="Share a short reason if you wish."></textarea>
+                <p class="hint">This is optional. We do not ask for your name, email, or phone number.</p>
+            </div>
+
+            <div class="action-row">
+                <button class="button button-primary" id="submitVote" disabled>Submit Vote</button>
+                <a class="button button-muted" href="results.html">View Results</a>
+            </div>
+
+            <p class="vote-note">Anonymous participation is preferred. You always know what data is collected: your selected option, an optional reason, and a timestamp. The button becomes active after you choose an option.</p>
+
+            <div class="thank-you-panel hidden">
+                <h2>Thank you.</h2>
+                <p>Your opinion has been recorded and helps the community understand public sentiment.</p>
+                <a class="button button-secondary" href="results.html">See Results</a>
+            </div>
+
+            <section class="state-card state-card--success" aria-live="polite">
+                <div class="state-icon" aria-hidden="true">🎉</div>
+                <h2>Thank you for participating.</h2>
+                <p>Your opinion has been recorded successfully. We appreciate your contribution and invite you to view the latest results.</p>
+                <div class="action-row compact">
+                    <a class="button button-primary" href="results.html">View Results</a>
+                    <a class="button button-muted" href="index.html">Return Home</a>
+                </div>
+            </section>
+
+            <section class="state-card state-card--vote-failed" aria-live="polite">
+                <div class="state-icon" aria-hidden="true">❌</div>
+                <h2>Your vote could not be submitted.</h2>
+                <p>That can happen when the connection is briefly interrupted or the service is temporarily busy. Please try again when you’re ready.</p>
+                <div class="action-row compact">
+                    <a class="button button-primary" href="vote.html">Retry Voting</a>
+                    <a class="button button-muted" href="index.html">Cancel</a>
+                </div>
+            </section>
+
+            <section class="state-card state-card--already-voted" aria-live="polite">
+                <div class="state-icon" aria-hidden="true">✅</div>
+                <h2>It looks like you’ve already voted.</h2>
+                <p>To keep the process fair, each user can submit one active vote. You can view the current results or learn more about how updates work.</p>
+                <div class="action-row compact">
+                    <a class="button button-primary" href="results.html">View Results</a>
+                    <a class="button button-muted" href="facts.html">Learn More</a>
+                </div>
+            </section>
+        </section>
+
+        <section class="glass-card sources-section" aria-labelledby="sources-title">
+            <div class="section-heading">
+                <span class="eyebrow">Sources</span>
+                <h2 id="sources-title">Information Sources</h2>
+                <p>Every factual statement is supported by credible public sources so the platform stays transparent and trustworthy.</p>
+            </div>
+            <div class="sources-grid">
+                <article class="source-card">
+                    <h3>Government Reports</h3>
+                    <p>Official public policy reports, agency documents, and regulatory publications.</p>
+                </article>
+                <article class="source-card">
+                    <h3>Research Papers</h3>
+                    <p>Peer-reviewed studies and academic research used to explain technical trade-offs.</p>
+                </article>
+                <article class="source-card">
+                    <h3>Universities</h3>
+                    <p>Public university research, educational institutes, and academic institutions.</p>
+                </article>
+                <article class="source-card">
+                    <h3>International Organizations</h3>
+                    <p>Reports from global bodies such as the IPCC, IEA, FAO, and related institutions.</p>
+                </article>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div>© 2026 MyFuelMyChoice</div>
+        <div class="footer-meta">
+            <span class="footer-credit">Created by Arun Kaushik</span>
+            <div class="footer-links">
+                <a href="privacy.html">Privacy Policy</a>
+                <a href="data-policy.html">Data Collection Policy</a>
+            </div>
+        </div>
+    </footer>
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Results | MyFuelMyChoice</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="site-nav">
+        <div class="logo">⛽ MyFuelMyChoice</div>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="facts.html">Learn</a></li>
+            <li><a href="vote.html">Vote</a></li>
+            <li><a href="results.html" aria-current="page">Results</a></li>
+        </ul>
+    </nav>
+
+    <main class="results-page">
+        <section class="page-hero page-hero-light">
+            <div class="page-header">
+                <span class="eyebrow">Results Dashboard</span>
+                <h1>Public opinion at a glance.</h1>
+                <p class="hero-text">Transparent statistics for total votes, support distribution, and recent community feedback.</p>
+            </div>
+            <aside class="callout glass-card">
+                <strong>Community summary</strong>
+                <p>Data is presented clearly so everyone can compare vote distribution and progress over time.</p>
+            </aside>
+        </section>
+
+        <section class="results-grid" aria-busy="true">
+            <article>
+                <span>Total votes</span>
+                <strong>--Loading...</strong>
+            </article>
+            <article>
+                <span>Support</span>
+                <strong>--Loading...</strong>
+            </article>
+            <article>
+                <span>Oppose</span>
+                <strong>--Loading...</strong>
+            </article>
+            <article>
+                <span>Neutral</span>
+                <strong>--Loading...</strong>
+            </article>
+        </section>
+
+        <section class="state-card state-card--empty" aria-live="polite">
+            <div class="state-icon" aria-hidden="true">🗳️</div>
+            <h2>No votes yet</h2>
+            <p>There is no public opinion recorded yet. Be the first person to share your view.</p>
+            <a class="button button-primary" href="vote.html">Cast Your Vote</a>
+        </section>
+
+        <section class="state-card state-card--loading" aria-live="polite">
+            <div class="state-icon" aria-hidden="true">⏳</div>
+            <h2>Loading latest results…</h2>
+            <p>We’re preparing the latest public opinion data for you. Please wait a moment.</p>
+            <div class="skeleton-row"></div>
+            <div class="skeleton-row short"></div>
+        </section>
+
+        <section class="state-card state-card--offline" aria-live="polite">
+            <div class="state-icon" aria-hidden="true">📶</div>
+            <h2>No Internet Connection</h2>
+            <p>We couldn’t connect to the internet right now. Please check your connection and try again when you’re ready.</p>
+            <div class="action-row compact">
+                <a class="button button-primary" href="results.html">Retry</a>
+                <a class="button button-muted" href="index.html">Continue Offline</a>
+            </div>
+        </section>
+
+        <section class="state-card state-card--error" aria-live="polite">
+            <div class="state-icon" aria-hidden="true">⚠️</div>
+            <h2>Something went wrong</h2>
+            <p>We’re having trouble loading this information right now. Please try again in a moment.</p>
+            <div class="action-row compact">
+                <a class="button button-primary" href="results.html">Retry</a>
+                <a class="button button-muted" href="index.html">Go Back Home</a>
+            </div>
+        </section>
+
+        <section class="results-section glass-card" aria-busy="true">
+            <h2>Vote distribution</h2>
+            <div class="distribution">
+                <div class="distribution-row">
+                    <div><span>Support</span><strong id="supportPercent">--Loading...</strong></div>
+                    <div class="chart-bar bar-support"><span style="width: 0%;"></span></div>
+                </div>
+                <div class="distribution-row">
+                    <div><span>Oppose</span><strong id="opposePercent">--Loading...</strong></div>
+                    <div class="chart-bar bar-oppose"><span style="width: 0%;"></span></div>
+                </div>
+                <div class="distribution-row">
+                    <div><span>Neutral</span><strong id="neutralPercent">--Loading...</strong></div>
+                    <div class="chart-bar bar-neutral"><span style="width: 0%;"></span></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="results-section glass-card" aria-busy="true">
+            <h2>Country participation</h2>
+            <div class="country-grid">
+                <article class="country-card">
+                    <strong>India</strong>
+                    <p>--Loading...</p>
+                </article>
+                <article class="country-card">
+                    <strong>Brazil</strong>
+                    <p>--Loading...</p>
+                </article>
+                <article class="country-card">
+                    <strong>Germany</strong>
+                    <p>--Loading...</p>
+                </article>
+            </div>
+        </section>
+
+        <section class="results-section glass-card">
+            <h2>Common reasons</h2>
+            <ul class="common-reasons">
+                <li>Supporters note lower reliance on imported oil and potential emissions benefits.</li>
+                <li>Opponents cite concerns about vehicle compatibility and crop-based production impacts.</li>
+                <li>Neutral voters say they need more evidence before taking a firm stance.</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div>© 2026 MyFuelMyChoice</div>
+        <div class="footer-meta">
+            <span class="footer-credit">Created by Arun Kaushik</span>
+            <div class="footer-links">
+                <a href="privacy.html">Privacy Policy</a>
+                <a href="data-policy.html">Data Collection Policy</a>
+            </div>
+        </div>
+    </footer>
+    <script src="script.js"></script>
+</body>
+</html>

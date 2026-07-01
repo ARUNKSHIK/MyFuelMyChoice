@@ -1,0 +1,12 @@
+[
+  {
+    "choice": "neutral",
+    "reason": "",
+    "timestamp": "2026-07-01T00:56:42.281Z"
+  },
+  {
+    "choice": "support",
+    "reason": "test",
+    "timestamp": "2026-07-01T00:00:00Z"
+  }
+]
