@@ -77,35 +77,67 @@ function markSelectedCard() {
     });
 }
 
-async function getStoredVotes() {
+async function getStoredResults() {
+    const fallback = {
+        votes: [],
+        counts: { support: 0, oppose: 0, neutral: 0 },
+        totalVotes: 0
+    };
+
     try {
         const response = await fetch(API_URL);
-        if (!response.ok) return [];
+        if (!response.ok) return fallback;
+
         const payload = await response.json();
-        return Array.isArray(payload.votes) ? payload.votes : [];
+        if (payload && Array.isArray(payload.votes)) {
+            return {
+                votes: payload.votes,
+                counts: {
+                    support: typeof payload.counts?.support === 'number' ? payload.counts.support : 0,
+                    oppose: typeof payload.counts?.oppose === 'number' ? payload.counts.oppose : 0,
+                    neutral: typeof payload.counts?.neutral === 'number' ? payload.counts.neutral : 0
+                },
+                totalVotes: typeof payload.totalVotes === 'number' ? payload.totalVotes : payload.votes.length
+            };
+        }
+
+        return fallback;
     } catch {
         const storedVotes = localStorage.getItem(VOTE_HISTORY_KEY);
-
         if (storedVotes) {
             try {
                 const parsedVotes = JSON.parse(storedVotes);
-                return Array.isArray(parsedVotes) ? parsedVotes : [];
+                if (Array.isArray(parsedVotes)) {
+                    const counts = { support: 0, oppose: 0, neutral: 0 };
+                    parsedVotes.forEach((vote) => {
+                        if (vote && vote.choice && counts[vote.choice] !== undefined) {
+                            counts[vote.choice] += 1;
+                        }
+                    });
+                    return { votes: parsedVotes, counts, totalVotes: parsedVotes.length };
+                }
             } catch {
                 localStorage.removeItem(VOTE_HISTORY_KEY);
             }
         }
 
         const singleVote = localStorage.getItem(STORAGE_KEY);
-
-        if (!singleVote) return [];
+        if (!singleVote) return fallback;
 
         try {
             const parsedVote = JSON.parse(singleVote);
-            return parsedVote && parsedVote.choice ? [parsedVote] : [];
+            if (parsedVote && parsedVote.choice) {
+                const counts = { support: 0, oppose: 0, neutral: 0 };
+                if (counts[parsedVote.choice] !== undefined) {
+                    counts[parsedVote.choice] = 1;
+                }
+                return { votes: [parsedVote], counts, totalVotes: 1 };
+            }
         } catch {
             localStorage.removeItem(STORAGE_KEY);
-            return [];
         }
+
+        return fallback;
     }
 }
 
@@ -125,12 +157,8 @@ async function updateResultsPage() {
 
     if (!summaryValues.length) return;
 
-    const votes = await getStoredVotes();
+    const { votes, counts: apiCounts, totalVotes: apiTotalVotes } = await getStoredResults();
     const counts = { support: 0, oppose: 0, neutral: 0 };
-
-    if (votes.length && !localStorage.getItem(VOTE_HISTORY_KEY) && localStorage.getItem(STORAGE_KEY)) {
-        localStorage.setItem(VOTE_HISTORY_KEY, JSON.stringify(votes));
-    }
 
     votes.forEach((vote) => {
         if (vote && vote.choice && counts[vote.choice] !== undefined) {
@@ -138,7 +166,12 @@ async function updateResultsPage() {
         }
     });
 
-    const totalVotes = votes.length;
+    const countsToDisplay = {
+        support: apiCounts.support ?? counts.support,
+        oppose: apiCounts.oppose ?? counts.oppose,
+        neutral: apiCounts.neutral ?? counts.neutral
+    };
+    const totalVotes = apiTotalVotes ?? votes.length;
 
     if (resultsGrid) {
         resultsGrid.setAttribute('aria-busy', 'false');
@@ -156,20 +189,24 @@ async function updateResultsPage() {
         errorState.style.display = 'none';
     }
 
+    if (votes.length && !localStorage.getItem(VOTE_HISTORY_KEY) && localStorage.getItem(STORAGE_KEY)) {
+        localStorage.setItem(VOTE_HISTORY_KEY, JSON.stringify(votes));
+    }
+
     summaryValues[0].textContent = totalVotes.toString();
-    summaryValues[1].textContent = counts.support.toString();
-    summaryValues[2].textContent = counts.oppose.toString();
-    summaryValues[3].textContent = counts.neutral.toString();
+    summaryValues[1].textContent = countsToDisplay.support.toString();
+    summaryValues[2].textContent = countsToDisplay.oppose.toString();
+    summaryValues[3].textContent = countsToDisplay.neutral.toString();
 
     const formatPercent = (count) => (totalVotes ? `${Math.round((count / totalVotes) * 100)}%` : '0%');
 
-    if (supportPercent) supportPercent.textContent = formatPercent(counts.support);
-    if (opposePercent) opposePercent.textContent = formatPercent(counts.oppose);
-    if (neutralPercent) neutralPercent.textContent = formatPercent(counts.neutral);
+    if (supportPercent) supportPercent.textContent = formatPercent(countsToDisplay.support);
+    if (opposePercent) opposePercent.textContent = formatPercent(countsToDisplay.oppose);
+    if (neutralPercent) neutralPercent.textContent = formatPercent(countsToDisplay.neutral);
 
-    if (supportBar) supportBar.style.width = formatPercent(counts.support);
-    if (opposeBar) opposeBar.style.width = formatPercent(counts.oppose);
-    if (neutralBar) neutralBar.style.width = formatPercent(counts.neutral);
+    if (supportBar) supportBar.style.width = formatPercent(countsToDisplay.support);
+    if (opposeBar) opposeBar.style.width = formatPercent(countsToDisplay.oppose);
+    if (neutralBar) neutralBar.style.width = formatPercent(countsToDisplay.neutral);
 }
 
 async function getCsrfToken() {
