@@ -1,8 +1,8 @@
 services:
   - type: web
     name: myfuelmychoice
-    env: python
+    env: node
     plan: free
-    buildCommand: pip install -r requirements.txt
-    startCommand: python server.py
+    buildCommand: npm install --omit=dev
+    startCommand: node server.js
     healthCheckPath: /

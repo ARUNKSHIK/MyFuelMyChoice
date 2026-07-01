@@ -13,7 +13,58 @@ const reasonInput = document.getElementById('reason');
 const thankYouPanel = document.querySelector('.thank-you-panel');
 const voteStatus = document.querySelector('.vote-status');
 const statusCopy = document.querySelector('.status-copy');
+const successStateCard = document.querySelector('.state-card--success');
+const errorStateCard = document.querySelector('.state-card--vote-failed');
+const duplicateStateCard = document.querySelector('.state-card--already-voted');
 let selectedChoice = null;
+
+function setActiveStateCard(activeCard) {
+    [successStateCard, errorStateCard, duplicateStateCard].forEach((card) => {
+        if (!card) return;
+        card.classList.toggle('hidden', card !== activeCard);
+    });
+
+    if (voteStatus) {
+        voteStatus.classList.add('hidden');
+    }
+
+    if (thankYouPanel) {
+        thankYouPanel.classList.remove('visible');
+        thankYouPanel.classList.add('hidden');
+    }
+}
+
+function showSuccessState() {
+    setActiveStateCard(successStateCard);
+}
+
+function showErrorState() {
+    setActiveStateCard(errorStateCard);
+}
+
+function showDuplicateState() {
+    setActiveStateCard(duplicateStateCard);
+}
+
+function readStoredVote() {
+    const storedVote = localStorage.getItem(STORAGE_KEY);
+
+    if (!storedVote) return null;
+
+    try {
+        const vote = JSON.parse(storedVote);
+
+        if (!vote || !vote.choice || !validChoices.includes(vote.choice)) {
+            localStorage.removeItem(STORAGE_KEY);
+            return null;
+        }
+
+        return vote;
+    } catch {
+        localStorage.removeItem(STORAGE_KEY);
+        return null;
+    }
+}
 
 function updateSubmitState() {
     submitVote.disabled = !selectedChoice;
@@ -121,8 +172,33 @@ async function updateResultsPage() {
     if (neutralBar) neutralBar.style.width = formatPercent(counts.neutral);
 }
 
+async function getCsrfToken() {
+    try {
+        const response = await fetch('/api/csrf-token', {
+            method: 'GET',
+            credentials: 'same-origin'
+        });
+        if (!response.ok) {
+            return null;
+        }
+        const payload = await response.json();
+        return payload && typeof payload.token === 'string' ? payload.token : null;
+    } catch {
+        return null;
+    }
+}
+
 async function saveVote(choice, reason) {
     if (!validChoices.includes(choice)) return;
+
+    const existingVote = readStoredVote();
+    if (existingVote) {
+        selectedChoice = existingVote.choice;
+        markSelectedCard();
+        updateSubmitState();
+        showDuplicateState();
+        return;
+    }
 
     const vote = {
         choice,
@@ -130,65 +206,51 @@ async function saveVote(choice, reason) {
         timestamp: new Date().toISOString()
     };
 
+    const csrfToken = await getCsrfToken();
+    const headers = { 'Content-Type': 'application/json' };
+    if (csrfToken) {
+        headers['X-CSRF-Token'] = csrfToken;
+    }
+
     try {
         const response = await fetch(API_URL, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers,
+            credentials: 'same-origin',
             body: JSON.stringify(vote)
         });
 
         if (!response.ok) {
+            if (response.status === 409) {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(vote));
+                showDuplicateState();
+                return;
+            }
             throw new Error('Network error');
         }
 
         localStorage.setItem(STORAGE_KEY, JSON.stringify(vote));
         submitVote.disabled = true;
-        voteStatus.classList.remove('hidden');
-        voteStatus.querySelector('strong').textContent = 'Vote recorded';
-        statusCopy.textContent = 'Thank you for sharing your opinion. Results are available on the dashboard.';
-        thankYouPanel.classList.add('visible');
+        showSuccessState();
         await updateResultsPage();
     } catch {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(vote));
-        submitVote.disabled = true;
-        voteStatus.classList.remove('hidden');
-        voteStatus.querySelector('strong').textContent = 'Vote recorded';
-        statusCopy.textContent = 'Thank you for sharing your opinion. Results are available on the dashboard.';
-        thankYouPanel.classList.add('visible');
+        submitVote.disabled = false;
+        updateSubmitState();
+        showErrorState();
         await updateResultsPage();
     }
 }
 
 function loadStoredVote() {
-    const storedVote = localStorage.getItem(STORAGE_KEY);
+    const vote = readStoredVote();
 
-    if (!storedVote) return;
+    if (!vote) return;
 
-    try {
-        const vote = JSON.parse(storedVote);
+    selectedChoice = vote.choice;
+    markSelectedCard();
 
-        if (!vote || !vote.choice || !validChoices.includes(vote.choice)) {
-            localStorage.removeItem(STORAGE_KEY);
-            return;
-        }
-
-        selectedChoice = vote.choice;
-        markSelectedCard();
-
-        submitVote.disabled = true;
-
-        voteStatus.classList.remove('hidden');
-        voteStatus.querySelector('strong').textContent = 'Vote already recorded';
-
-        const savedDate = vote.timestamp
-            ? dateFormatter.format(new Date(vote.timestamp))
-            : 'recently';
-
-        statusCopy.textContent = `Your ${vote.choice} vote was saved on ${savedDate}.`;
-        thankYouPanel.classList.add('visible');
-    } catch {
-        localStorage.removeItem(STORAGE_KEY);
-    }
+    submitVote.disabled = true;
+    showDuplicateState();
 }
 
 choiceCards.forEach((card) => {

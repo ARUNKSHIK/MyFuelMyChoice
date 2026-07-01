@@ -8,5 +8,10 @@
     "choice": "support",
     "reason": "test",
     "timestamp": "2026-07-01T00:00:00Z"
+  },
+  {
+    "choice": "oppose",
+    "reason": "not happy",
+    "timestamp": "2026-07-01T04:12:17.012Z"
   }
 ]
